@@ -60,24 +60,122 @@ void bl_dgemm(
 )
 {
   int    i, j, p;
-  int   mc,nc,kc;
-  int   jr,mr,kr;
+  double *cp;
+  double *cp1;
+  double *cp2;
+  double *cp3;
+  double mR;
+  double nR;
+
   // Early return if possible
   if ( m == 0 || n == 0 || k == 0 ) {
     printf( "bl_dgemm(): early return\n" );
     return;
   }
 
-	for(jc = 0; jc < n; jc += nc){
-		for(pc = 0;pc < k;pc += kc){
-                	for(ic = 0;ic <m;ic += mc){
-				for(jr = 0; jr < nc; jr+=nr){
-					for(ir = 0;ir < mc; ir+=mr){
-						for(kr = 0; kr < kc; kr++){
-}
-	}                                          // End 0-th loop
-                                              // End 1-th loop
-	}                                              // End 2-th loop
+  for ( j = 0; j < n; j +=4 ) {                    // 2-th loop
+
+      cp = &C [ j*ldc];
+      cp1 = &C [ j+1*ldc];
+      cp2 = &C [ j+2*ldc];
+      cp3 = &C [ j+3*ldc];
+
+      for ( i = 0; i < m; i += 4 ) {                // 1-th loop
+ 
+          
+          for ( p = 0; p < k; p +=4 ) {            // 0-th loop
+
+              //C[ j * ldc + i ] += A[ p * lda + i ] * B[ j * ldb + p ];
+
+              *(cp+0) = A( i, p ) * B( p, j );
+              *(cp+0) = A( i, p+1 ) * B( p+1, j ); 
+              *(cp+0) = A( i, p+2 ) * B( p+2, j );
+              *(cp+0) = A( i, p+3 ) * B( p+3, j );
+
+              *(cp+1) = A( i+1, p ) * B( p, j );
+              *(cp+1) = A( i+1, p+1 ) * B( p+1, j ); 
+              *(cp+1) = A( i+1, p+2 ) * B( p+2, j );
+              *(cp+1) = A( i+1, p+3 ) * B( p+3, j );
+
+              *(cp+2) = A( i+2, p ) * B( p, j );
+              *(cp+2) = A( i+2, p+1 ) * B( p+1, j ); 
+              *(cp+2) = A( i+2, p+2 ) * B( p+2, j );
+              *(cp+2) = A( i+2, p+3 ) * B( p+3, j );
+ 
+              *(cp+3) = A( i+3, p ) * B( p, j );
+              *(cp+3) = A( i+3, p+1 ) * B( p+1, j ); 
+              *(cp+3) = A( i+3, p+2 ) * B( p+2, j );
+              *(cp+3) = A( i+3, p+3 ) * B( p+3, j );
+              cp += 4;   
+
+
+              *(cp1+0) = A( i, p ) * B( p, j );
+              *(cp1+0) = A( i, p+1 ) * B( p+1, j ); 
+              *(cp1+0) = A( i, p+2 ) * B( p+2, j );
+              *(cp1+0) = A( i, p+3 ) * B( p+3, j );
+
+              *(cp1+1) = A( i+1, p ) * B( p, j );
+              *(cp1+1) = A( i+1, p+1 ) * B( p+1, j ); 
+              *(cp1+1) = A( i+1, p+2 ) * B( p+2, j );
+              *(cp1+1) = A( i+1, p+3 ) * B( p+3, j );
+
+              *(cp1+2) = A( i+2, p ) * B( p, j );
+              *(cp1+2) = A( i+2, p+1 ) * B( p+1, j ); 
+              *(cp1+2) = A( i+2, p+2 ) * B( p+2, j );
+              *(cp1+2) = A( i+2, p+3 ) * B( p+3, j );
+ 
+              *(cp1+3) = A( i+3, p ) * B( p, j );
+              *(cp1+3) = A( i+3, p+1 ) * B( p+1, j ); 
+              *(cp1+3) = A( i+3, p+2 ) * B( p+2, j );
+              *(cp1+3) = A( i+3, p+3 ) * B( p+3, j );
+              cp1 += 4;
+
+              *(cp2+0) = A( i, p ) * B( p, j );
+              *(cp2+0) = A( i, p+1 ) * B( p+1, j ); 
+              *(cp2+0) = A( i, p+2 ) * B( p+2, j );
+              *(cp+0) = A( i, p+3 ) * B( p+3, j );
+
+              *(cp2+1) = A( i+1, p ) * B( p, j );
+              *(cp2+1) = A( i+1, p+1 ) * B( p+1, j ); 
+              *(cp2+1) = A( i+1, p+2 ) * B( p+2, j );
+              *(cp2+1) = A( i+1, p+3 ) * B( p+3, j );
+
+              *(cp2+2) = A( i+2, p ) * B( p, j );
+              *(cp2+2) = A( i+2, p+1 ) * B( p+1, j ); 
+              *(cp2+2) = A( i+2, p+2 ) * B( p+2, j );
+              *(cp2+2) = A( i+2, p+3 ) * B( p+3, j );
+ 
+              *(cp2+3) = A( i+3, p ) * B( p, j );
+              *(cp2+3) = A( i+3, p+1 ) * B( p+1, j ); 
+              *(cp2+3) = A( i+3, p+2 ) * B( p+2, j );
+              *(cp2+3) = A( i+3, p+3 ) * B( p+3, j );
+              cp2 += 4; 
+
+              *(cp3+0) = A( i, p ) * B( p, j );
+              *(cp3+0) = A( i, p+1 ) * B( p+1, j ); 
+              *(cp3+0) = A( i, p+2 ) * B( p+2, j );
+              *(cp3+0) = A( i, p+3 ) * B( p+3, j );
+
+              *(cp3+1) = A( i+1, p ) * B( p, j );
+              *(cp3+1) = A( i+1, p+1 ) * B( p+1, j ); 
+              *(cp3+1) = A( i+1, p+2 ) * B( p+2, j );
+              *(cp3+1) = A( i+1, p+3 ) * B( p+3, j );
+
+              *(cp3+2) = A( i+2, p ) * B( p, j );
+              *(cp3+2) = A( i+2, p+1 ) * B( p+1, j ); 
+              *(cp3+2) = A( i+2, p+2 ) * B( p+2, j );
+              *(cp3+2) = A( i+2, p+3 ) * B( p+3, j );
+ 
+              *(cp3+3) = A( i+3, p ) * B( p, j );
+              *(cp3+3) = A( i+3, p+1 ) * B( p+1, j ); 
+              *(cp3+3) = A( i+3, p+2 ) * B( p+2, j );
+              *(cp3+3) = A( i+3, p+3 ) * B( p+3, j );
+              cp3 += 4;  
+             //Each operand is a MACRO defined in bl_dgemm() function.
+             // C( i, j ) += A( i,p+1) * B( p+1,j);
+          }                                      // End 0-th loop
+      }                                          // End 1-th loop
+  }                                              // End 2-th loop
 
 }
 
